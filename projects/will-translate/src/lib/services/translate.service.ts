@@ -1,15 +1,23 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
-import { Observable, catchError, filter, of, take, tap } from 'rxjs';
+import {
+  Injectable,
+  Signal,
+  WritableSignal,
+  computed,
+  effect,
+  signal,
+} from '@angular/core';
+import { Observable, filter, from, take, tap } from 'rxjs';
 import { ITranslateConfig } from '../models/translate.models';
-import { getTranslation, keyNotFoundError, replacePlaceholders } from '../utils/translate.utils';
+import {
+  getTranslation,
+  keyNotFoundError,
+  replacePlaceholders,
+} from '../utils/translate.utils';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { MockTranslateService } from './mockTranslateService';
 
 @Injectable({ providedIn: 'root' })
 export class TranslateService {
-  private http = inject(HttpClient);
-
   static url: WritableSignal<string>;
   static country: WritableSignal<string>;
 
@@ -28,11 +36,18 @@ export class TranslateService {
   }
 
   private getTranslations(url: string) {
-    return this.http.get(url).pipe(
-      catchError((err) => {
-        console.error(err.message);
-        return of(null);
-      })
+    return from(
+      fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .catch((err) => {
+          console.error(err.message);
+          return null;
+        })
     );
   }
 
