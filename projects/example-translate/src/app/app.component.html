@@ -1,4 +1,16 @@
-<h1>{{ "name" | translate }}</h1>
+<h1>{{ "question" | translate }}</h1>
+
+<form [formGroup]="form">
+  <input
+    formControlName="name"
+    type="text"
+    maxlength="50"
+    minlength="3"
+    placeholder="John Doe"
+  />
+</form>
+
+<h3>{{ "response" | translate : { name: form.get("name")?.value } }}</h3>
 
 <button (click)="changeLanguage('en')">English</button>
 
