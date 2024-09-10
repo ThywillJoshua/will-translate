@@ -10,7 +10,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideTranslate({
       initialUrl: `assets/langs/en.json`,
-      initialCountry: 'de',
     }),
   ],
 };

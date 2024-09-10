@@ -18,21 +18,24 @@ import { MockTranslateService } from './mockTranslateService';
 
 @Injectable({ providedIn: 'root' })
 export class TranslateService {
-  static url: WritableSignal<string>;
-  static country: WritableSignal<string>;
+  static _url: WritableSignal<string>;
 
   private translations = signal<Record<string, any> | null>(null);
 
   constructor() {
     //updateTranslations when url changes
     effect(() => {
-      this.getTranslations(TranslateService.url())
+      this.getTranslations(TranslateService._url())
         .pipe(
           take(1),
           tap((t) => this.translations.set(t))
         )
         .subscribe();
     });
+  }
+
+  updateUrl(url: string) {
+    TranslateService._url.set(url);
   }
 
   private getTranslations(url: string) {
@@ -65,7 +68,7 @@ export class TranslateService {
       const keys = key.split('.');
       const { translation, found } = getTranslation(this.translations(), keys);
       if (!found) {
-        console.warn(keyNotFoundError(key, TranslateService.url()));
+        console.warn(keyNotFoundError(key, TranslateService._url()));
         return key;
       }
 
@@ -88,9 +91,8 @@ export class TranslateService {
   }
 }
 
-export function provideTranslate(data: ITranslateConfig) {
-  TranslateService.url = signal(data.initialUrl);
-  TranslateService.country = signal(data.initialCountry);
+export function provideTranslate(config: ITranslateConfig) {
+  TranslateService._url = signal(config.initialUrl);
   return TranslateService;
 }
 

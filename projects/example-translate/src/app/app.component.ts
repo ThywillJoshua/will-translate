@@ -19,6 +19,6 @@ export class AppComponent {
   });
 
   changeLanguage(lang: string) {
-    TranslateService.url.set(`assets/langs/${lang}.json`);
+    this.translateService.updateUrl(`assets/langs/${lang}.json`);
   }
 }
